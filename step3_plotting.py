@@ -4,80 +4,27 @@ import matplotlib.pyplot as plt
 from itertools import count, repeat
 
 
-from repeat import pers_div, repeat_class_family, matching_repeat, sw_score, left_in_repeat_consensus, pers_div
-from step1_read_data_from_file import get_clean_data, filterer_by, output_to_file, CHEETAH_DATA_FILE
-from step2_groupby_family import perform_grouping, group_by
+from repeat import repeat_class_family, matching_repeat, left_in_repeat_consensus, pers_div
+from step1_reading_writing_file import get_clean_data
+from step2_sorting_aggregating import filter_fully_matching, \
+    group_by_repeat_family, cluster_by_divergence, items_in_clusters
 
 
-TARGET_CLASS_FAMILY = 'LINE/L2'
-
-
-def first_n(l, n):
-    return l[:n]
-
-
-def first_ten(l):
-    return first_n(l, 10)
-
-
-def prepare_block(block):
-    return map(matching_repeat, block), zip(map(pers_div, block), count())
-
-
-def prepare_data(blocks):
-    return map(prepare_block, blocks)
-
-
-def block_to_map(block):
-    item = block[0]
-    return repeat_class_family(item), block
-
-
-def get_target_block():
-    return grouped_dict()[TARGET_CLASS_FAMILY]
-
-
-def grouped_dict():
-    return dict(map(block_to_map, perform_grouping()))
-
-
-def sort_by_repeat_family(data):
-    return sorted(data, key=repeat_class_family)
-
-
-def group_to_dict_by_repeat_family(data):
-    return dict(map(block_to_map, group_by(repeat_class_family, sort_by_repeat_family(data))))
-
-
-def cluster_by_divergence(data, number_of_clusters):
-    result = [0 for i in range(number_of_clusters)]
-    for item in data:
-        index = int(pers_div(item) // number_of_clusters)
-        result[index] += 1
-    return result
-
+CHEETAH_DATA_FILE = '/Users/nikita_kartashov/Downloads/cheetah_scaffolds.fa.out'
 TARGET_REPEAT_CLASS = 'LINE/L2'
 
 if __name__ == '__main__':
-    # value = 'DNA/TcMar-Tc2'
-    # i = 0
-    # for item in filter(filterer_by(repeat_class_family, value), get_clean_data()):
-    #     if i == 10:
-    #         break
-    #     print(item)
-    #     i += 1
-    # all_matched = filter(filterer_by(left_in_repeat_consensus, 0), get_clean_data())
-    # # output_to_file(CHEETAH_DATA_FILE + '_' + 'fully_matched', all_matched)
-    # grouped = group_to_dict_by_repeat_family(all_matched)
-    # # print(zip(grouped.keys(), map(len, grouped.values())))
-    # target_block = grouped[TARGET_REPEAT_CLASS]
-    # sorted_by_divergence = sorted(target_block, key=pers_div)
-    # number_of_clusters = 20
-    # clustered_data = cluster_by_divergence(sorted_by_divergence, number_of_clusters)
-    # print(clustered_data)
-    # plt.plot(range(len(clustered_data)), clustered_data, 'ro')
-    # plt.axis([0, len(clustered_data), 0, len(sorted_by_divergence)])
-    # plt.show()
-
-    filtered = filter(filterer_by(repeat_class_family, 'DNA?'), get_clean_data())
-    output_to_file(CHEETAH_DATA_FILE + '_DNA_UNIDENTIFIED', filtered)
+    fully_matched = filter_fully_matching(get_clean_data(CHEETAH_DATA_FILE))
+    grouped_by_repeat_family = group_by_repeat_family(fully_matched)
+    target_block = grouped_by_repeat_family[TARGET_REPEAT_CLASS]
+    min_divergence = 0
+    max_divergence = 100
+    number_of_clusters = 20
+    clustered_by_divergence = cluster_by_divergence(target_block,
+                                                    min_divergence,
+                                                    max_divergence,
+                                                    number_of_clusters)
+    cluster_sizes = items_in_clusters(clustered_by_divergence)
+    plt.plot(range(number_of_clusters), cluster_sizes, 'ro')
+    plt.axis([0, number_of_clusters, 0, max(cluster_sizes)])
+    plt.show()
