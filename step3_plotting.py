@@ -1,10 +1,7 @@
 __author__ = 'nikita_kartashov'
 
 import matplotlib.pyplot as plt
-from itertools import count, repeat
 
-
-from repeat import repeat_class_family, matching_repeat, left_in_repeat_consensus, pers_div
 from step1_reading_writing_file import get_clean_data
 from step2_sorting_aggregating import filter_fully_matching, \
     group_by_repeat_family, cluster_by_divergence, items_in_clusters
@@ -18,8 +15,8 @@ if __name__ == '__main__':
     grouped_by_repeat_family = group_by_repeat_family(fully_matched)
     target_block = grouped_by_repeat_family[TARGET_REPEAT_CLASS]
     min_divergence = 0
-    max_divergence = 100
-    number_of_clusters = 20
+    max_divergence = 50
+    number_of_clusters = 1000
     clustered_by_divergence = cluster_by_divergence(target_block,
                                                     min_divergence,
                                                     max_divergence,

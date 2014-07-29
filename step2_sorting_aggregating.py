@@ -30,13 +30,16 @@ def cluster_data(aggregate_function, data, domain_min, domain_max, number_of_clu
     :return: the resulting clustered tuples
     """
     domain_width = domain_max - domain_min
-    cluster_width = domain_width / number_of_clusters
+    cluster_width = domain_width * 1.0 / number_of_clusters
 
     def cluster_index(item):
         return int(aggregate_function(item) // cluster_width)
     result = [[] for i in xrange(number_of_clusters)]
     for item in data:
-        result[cluster_index(item)].append(item)
+        if aggregate_function(item) <= domain_min or aggregate_function(item) >= domain_max:
+            continue
+        index = cluster_index(item)
+        result[index].append(item)
     return result
 
 
