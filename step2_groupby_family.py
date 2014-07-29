@@ -2,8 +2,8 @@ __author__ = 'nikita_kartashov'
 
 from os import path
 
-from step1_sort_by_family import perform_sorting_by_family
-from repeat import repeat_class, pers_div, split_repeat_line
+from step1_read_data_from_file import perform_sorting_by_family
+from repeat import repeat_class_family, pers_div, split_repeat_line
 
 CHEETAH_SORTED_DATA_FILE = '/Users/nikita_kartashov/Downloads/cheetah_scaffolds.fa.out_repeat_class'
 
@@ -32,14 +32,13 @@ def group_by(group_fun, iterable):
                 current_block = []
     return blocked_data
 
-
 def divergence_sort(block):
     return sorted(block, key=pers_div)
 
 
 def perform_grouping():
     input_data = read_data(CHEETAH_SORTED_DATA_FILE)
-    grouped_data = group_by(repeat_class, input_data)
+    grouped_data = group_by(repeat_class_family, input_data)
     grouped_data_sorted_by_less_divergence = map(divergence_sort, grouped_data)
     return grouped_data_sorted_by_less_divergence
 
