@@ -2,7 +2,7 @@ __author__ = 'nikita_kartashov'
 
 from itertools import groupby
 
-from repeat import repeat_class_family, pers_div, left_in_repeat_consensus
+from repeat import repeat_class_family, pers_div, left_in_repeat_consensus, matching_repeat, position_in_repeat_start
 from utils import sort_data, filterer_by
 
 
@@ -49,7 +49,7 @@ def filter_fully_matching(data):
     :param data: repeats iterable
     :return: filtered iterable
     """
-    return filter(filterer_by(left_in_repeat_consensus, 0), data)
+    return filter(filterer_by(position_in_repeat_start, 1), filter(filterer_by(left_in_repeat_consensus, 0), data))
 
 
 def group_by_repeat_family(data):
@@ -59,6 +59,15 @@ def group_by_repeat_family(data):
     :return: grouped repeats
     """
     return group_by_parameter(repeat_class_family, data)
+
+
+def group_by_matching_repeat(data):
+    """
+    Groups the repeats by matching repeat
+    :param data: repeats iterable
+    :return: grouped repeats
+    """
+    return group_by_parameter(matching_repeat, data)
 
 
 def cluster_by_divergence(data, div_min, div_max, number_of_clusters):
@@ -80,3 +89,12 @@ def items_in_clusters(clusters):
     :return: list of cluster sizes
     """
     return map(len, clusters)
+
+
+def items_in_values(dictionary):
+    """
+    Maps the clustered data in dictionary to the number of items in them
+    :param dictionary: clustered dictionary
+    :return: list of cluster sizes
+    """
+    return {key:len(value) for key, value in dictionary.iteritems()}

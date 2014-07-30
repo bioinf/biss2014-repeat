@@ -1,7 +1,8 @@
 __author__ = 'nikita_kartashov'
 
-from repeat import sw_score, repeat_class_family, matching_repeat, make_file_repr, split_repeat_line
-
+from repeat import sw_score, repeat_class_family, matching_repeat, make_file_repr,\
+    split_repeat_line, query_position_begin, query_position_end
+from fasta_sequence import FastaSequence
 
 def output_to_file(filename, data, repr_func=make_file_repr):
     """
@@ -9,7 +10,7 @@ def output_to_file(filename, data, repr_func=make_file_repr):
     :param filename: file to dump the data to
     :param data: iterable of data tuples
     :param repr_func: function returning the string representation of the tuple
-    :return:
+    :return: None
     """
     with open(filename, 'w') as outfile:
         outfile.writelines(map(repr_func, data))
@@ -42,3 +43,38 @@ def get_clean_data(filename):
     :return: list of data tuples
     """
     return map(split_repeat_line, skip_annotations(get_all_data(filename)))
+
+
+def get_repeat_sequences(data, sequence):
+    """
+    NOT YET WORKING
+    :param data:
+    :param sequence:
+    :return:
+    """
+    return [sequence.slice(query_position_begin(item), query_position_end(item)) for item in data]
+
+
+def get_repeat_sequences_naive(data, sequence):
+    """
+    Gets repeats from genome using data tuples provided
+    :param data: provided data tuples
+    :param sequence: genome
+    :return: requested repeats
+    """
+    return [sequence[query_position_begin(item): query_position_end(item)] for item in data]
+
+
+def dump_repeat_sequences(data_tuples, sequence, filename, tuple_getter=get_repeat_sequences_naive):
+    """
+    Dumps the repeats from genome using tuples in *data_tuples*
+    :param data_tuples: repeat data tuples
+    :param sequence: genome
+    :param filename: output file
+    :param tuple_getter: function extracting repeats from genome
+    :return: None
+    """
+    data = tuple_getter(data_tuples, sequence)
+    with open(filename, 'w') as output_file:
+        for line in data:
+            output_file.write(line + '\n')
