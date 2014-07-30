@@ -2,7 +2,7 @@ __author__ = 'nikita_kartashov'
 
 from repeat import sw_score, repeat_class_family, matching_repeat, make_file_repr,\
     split_repeat_line, query_position_begin, query_position_end
-from fasta_sequence import FastaSequence
+
 
 def output_to_file(filename, data, repr_func=make_file_repr):
     """
@@ -65,7 +65,7 @@ def get_repeat_sequences_naive(data, sequence):
     return [sequence[query_position_begin(item): query_position_end(item)] for item in data]
 
 
-def dump_repeat_sequences(data_tuples, sequence, filename, tuple_getter=get_repeat_sequences_naive):
+def dump_repeat_sequences_fasta_format(data_tuples, sequence, filename, tuple_getter=get_repeat_sequences_naive):
     """
     Dumps the repeats from genome using tuples in *data_tuples*
     :param data_tuples: repeat data tuples
@@ -75,6 +75,7 @@ def dump_repeat_sequences(data_tuples, sequence, filename, tuple_getter=get_repe
     :return: None
     """
     data = tuple_getter(data_tuples, sequence)
-    with open(filename, 'w') as output_file:
-        for line in data:
-            output_file.write(line + '\n')
+    with open(filename, 'a') as output_file:
+        for index, line in enumerate(data):
+            output_file.write('>sequence{0}\n'.format(index))
+            output_file.write('{0}\n'.format(line))
