@@ -37,6 +37,14 @@ def position_in_repeat_start(data_tuple):
     return int(data_tuple[11])
 
 
+def position_in_repeat_end(data_tuple):
+    return int(data_tuple[12])
+
+
+def repeat_length(data_tuple):
+    return position_in_repeat_end(data_tuple) - position_in_repeat_start(data_tuple)
+
+
 def left_in_repeat_consensus(data_tuple):
     return int(data_tuple[13].strip('()'))
 
